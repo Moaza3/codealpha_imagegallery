@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ===== MAIN SECTION ===== -->
+    <section class="cont">   <!-- ✅ Fix: section.cont → section class="cont" -->
+        <div class="container">
+            <h2>Gallery</h2>
+            <p>Made by Moaza</p>
+            <div class="gallery" id="galleryContainer">
+                <!-- JS yahan images daalega -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== LIGHTBOX SECTION ===== -->
+    <section class="lightbox-section">
+        <div class="lightbox" id="lightbox">
+            <span class="close" id="closeBtn">&times;</span>
+            <span class="prev" id="prevBtn">&#10094;</span>
+            <img src="" alt="Lightbox Image" id="lightboxImg" />
+            <span class="next" id="nextBtn">&#10095;</span>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>>
