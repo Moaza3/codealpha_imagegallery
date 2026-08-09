@@ -11,8 +11,9 @@
 <body>
 
     <!-- ===== MAIN SECTION ===== -->
-    <section class="cont">   <!-- ✅ Fix: section.cont → section class="cont" -->
+    <section class="cont">
         <div class="container">
+            <p class="eyebrow">// visual archive</p>
             <h1>Gallery</h1>
             <p>Made by Moaza</p>
             <div class="gallery" id="galleryContainer">
@@ -26,7 +27,10 @@
         <div class="lightbox" id="lightbox">
             <span class="close" id="closeBtn">&times;</span>
             <span class="prev" id="prevBtn">&#10094;</span>
-            <img src="" alt="Lightbox Image" id="lightboxImg" />
+            <div class="stage">
+                <img src="" alt="Lightbox Image" id="lightboxImg" />
+                <span class="frame-count" id="frameCount"></span>
+            </div>
             <span class="next" id="nextBtn">&#10095;</span>
         </div>
     </section>
@@ -34,4 +38,4 @@
     <script src="script.js"></script>
 </body>
 
-</html>>
+</html>
