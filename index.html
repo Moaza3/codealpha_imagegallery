@@ -4,30 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
+    <title>Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- ===== MAIN SECTION ===== -->
-    <section class="cont">
-        <div class="container">
-            <h1>Gallery</h1>
-            <p>Made by Moaza</p>
-            <div class="gallery" id="galleryContainer">
-                <!-- JS yahan images daalega -->
-            </div>
-        </div>
-    </section>
+    <header>
+        <h1>Gallery</h1>
+        <p>created by Moaza</p>
+    </header>
 
-    <!-- ===== LIGHTBOX SECTION ===== -->
-    <section class="lightbox-section">
-        <div class="lightbox" id="lightbox">
-            <span class="close" id="closeBtn">&times;</span>
-            <span class="prev" id="prevBtn">&#10094;</span>
-            <div class="stage">
-                <img src="" alt="Lightbox Image" id="lightboxImg" />
-                <span class="frame-count" id="frameCount"></span>
-            </div>
-            <span class="next" id="nextBtn">&#10095;</span>
+    <div class="gallery" id="gallery"></div>
+
+    <div class="lightbox" id="lightbox">
+        <button class="close" id="closeBtn">&times;</button>
+        <button class="arrow prev" id="prevBtn">&#10094;</button>
+        <img src="" alt="" id="lightboxImg">
+        <button class="arrow next" id="nextBtn">&#10095;</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
