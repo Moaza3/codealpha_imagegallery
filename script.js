@@ -15,6 +15,8 @@ const images = [
 const gallery = document.getElementById('gallery');
 const items = [];
 
+document.getElementById('photoCount').textContent = `${images.length} photographs`;
+
 // ===== BUILD GRID =====
 images.forEach((src, index) => {
   const item = document.createElement('div');
@@ -64,6 +66,7 @@ items.forEach((item) => observer.observe(item));
 
 // ===== LIGHTBOX (morph from thumbnail) =====
 const lightbox = document.getElementById('lightbox');
+const lightboxFrame = document.getElementById('lightboxFrame');
 const lightboxImg = document.getElementById('lightboxImg');
 const closeBtn = document.getElementById('closeBtn');
 const prevBtn = document.getElementById('prevBtn');
@@ -73,91 +76,101 @@ const lbCaption = document.getElementById('lbCaption');
 let currentIndex = 0;
 let originIndex = 0;
 
-function centeredRect(naturalW, naturalH){
-  const maxW = window.innerWidth * 0.82;
-  const maxH = window.innerHeight * 0.78;
-  let w = naturalW, h = naturalH;
-  const ratio = Math.min(maxW / w, maxH / h, 1.4);
-  w *= ratio; h *= ratio;
-  return {
-    width: w,
-    height: h,
-    left: (window.innerWidth - w) / 2,
-    top: (window.innerHeight - h) / 2,
-  };
+// box size that respects the image's real aspect ratio, capped to fit the screen
+function fittedBoxSize(natW, natH){
+  const maxW = Math.min(window.innerWidth * 0.94, 1200);
+  const maxH = window.innerHeight * 0.90;
+  const ratio = Math.min(maxW / natW, maxH / natH);
+  return { w: natW * ratio, h: natH * ratio };
 }
 
-function setImgRect(el, rect){
-  el.style.top = rect.top + 'px';
-  el.style.left = rect.left + 'px';
-  el.style.width = rect.width + 'px';
-  el.style.height = rect.height + 'px';
+// transform that visually places the (given size, centered) lightbox frame
+// on top of a given thumbnail's rect, so it can morph FROM there
+function transformToMatchRect(rect, box){
+  const scale = Math.max(rect.width / box.w, rect.height / box.h, 0.05);
+  const originCenterX = rect.left + rect.width / 2;
+  const originCenterY = rect.top + rect.height / 2;
+  const viewportCenterX = window.innerWidth / 2;
+  const viewportCenterY = window.innerHeight / 2;
+  const dx = originCenterX - viewportCenterX;
+  const dy = originCenterY - viewportCenterY;
+  return `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(${scale})`;
 }
 
 function openLightbox(index){
   currentIndex = index;
   originIndex = index;
-  const originEl = items[index];
-  const startRect = originEl.getBoundingClientRect();
+  const rect = items[index].getBoundingClientRect();
 
   lightbox.classList.add('open');
-  lightboxImg.style.transition = 'none';
   lightboxImg.style.opacity = '1';
   lightboxImg.src = images[index];
-  setImgRect(lightboxImg, startRect);
   lbCaption.textContent = `No. ${String(index + 1).padStart(2, '0')} — ${index + 1} / ${images.length}`;
 
-  const finalize = () => {
-    const natW = lightboxImg.naturalWidth || startRect.width;
-    const natH = lightboxImg.naturalHeight || startRect.height;
-    const finalRect = centeredRect(natW, natH);
+  const runMorph = () => {
+    const box = fittedBoxSize(lightboxImg.naturalWidth || rect.width, lightboxImg.naturalHeight || rect.height);
+
+    // size the frame to match THIS image's real aspect ratio, then start it
+    // exactly on top of the clicked thumbnail, no transition
+    lightboxFrame.style.transition = 'none';
+    lightboxFrame.style.width = box.w + 'px';
+    lightboxFrame.style.height = box.h + 'px';
+    lightboxFrame.style.transform = transformToMatchRect(rect, box);
+
+    // next frame: flip to centered full size, letting CSS transition animate it
     requestAnimationFrame(() => {
-      lightboxImg.style.transition = '';
-      setImgRect(lightboxImg, finalRect);
+      requestAnimationFrame(() => {
+        lightboxFrame.style.transition = '';
+        lightboxFrame.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
     });
   };
 
-  if (lightboxImg.complete) {
-    requestAnimationFrame(finalize);
+  if (lightboxImg.complete && lightboxImg.naturalWidth){
+    runMorph();
   } else {
-    lightboxImg.onload = finalize;
+    lightboxImg.onload = runMorph;
   }
 }
 
 function closeLightbox(){
-  const originEl = items[originIndex];
-  const targetRect = originEl.getBoundingClientRect();
+  const rect = items[originIndex].getBoundingClientRect();
 
   if (currentIndex === originIndex){
-    lightboxImg.style.transition = 'top 0.4s cubic-bezier(.2,.7,.2,1), left 0.4s cubic-bezier(.2,.7,.2,1), width 0.4s cubic-bezier(.2,.7,.2,1), height 0.4s cubic-bezier(.2,.7,.2,1)';
-    setImgRect(lightboxImg, targetRect);
+    const box = fittedBoxSize(lightboxImg.naturalWidth || rect.width, lightboxImg.naturalHeight || rect.height);
+    lightboxFrame.style.transition = 'transform 0.4s cubic-bezier(.2,.7,.2,1)';
+    lightboxFrame.style.transform = transformToMatchRect(rect, box);
   } else {
-    lightboxImg.style.transition = 'opacity 0.3s ease';
-    lightboxImg.style.opacity = '0';
+    lightboxFrame.style.transition = 'opacity 0.3s ease';
+    lightboxFrame.style.opacity = '0';
   }
 
   lightbox.classList.remove('open');
   setTimeout(() => {
-    lightboxImg.removeAttribute('style');
+    lightboxFrame.removeAttribute('style');
   }, 420);
 }
 
 function crossfadeTo(index){
   currentIndex = index;
-  lightboxImg.style.transition = 'opacity 0.25s ease';
   lightboxImg.style.opacity = '0';
   setTimeout(() => {
     lightboxImg.src = images[currentIndex];
     lbCaption.textContent = `No. ${String(currentIndex + 1).padStart(2, '0')} — ${currentIndex + 1} / ${images.length}`;
-    lightboxImg.onload = () => {
-      const finalRect = centeredRect(lightboxImg.naturalWidth, lightboxImg.naturalHeight);
-      lightboxImg.style.transition = 'none';
-      setImgRect(lightboxImg, finalRect);
-      requestAnimationFrame(() => {
-        lightboxImg.style.transition = 'opacity 0.25s ease';
-        lightboxImg.style.opacity = '1';
-      });
+
+    const applySize = () => {
+      const box = fittedBoxSize(lightboxImg.naturalWidth, lightboxImg.naturalHeight);
+      lightboxFrame.style.transition = 'width 0.35s ease, height 0.35s ease';
+      lightboxFrame.style.width = box.w + 'px';
+      lightboxFrame.style.height = box.h + 'px';
+      lightboxImg.style.opacity = '1';
     };
+
+    if (lightboxImg.complete && lightboxImg.naturalWidth){
+      applySize();
+    } else {
+      lightboxImg.onload = applySize;
+    }
   }, 220);
 }
 
@@ -181,7 +194,9 @@ document.addEventListener('keydown', (e) => {
 
 window.addEventListener('resize', () => {
   if (!lightbox.classList.contains('open') || !lightboxImg.naturalWidth) return;
-  const finalRect = centeredRect(lightboxImg.naturalWidth, lightboxImg.naturalHeight);
-  lightboxImg.style.transition = 'none';
-  setImgRect(lightboxImg, finalRect);
+  const box = fittedBoxSize(lightboxImg.naturalWidth, lightboxImg.naturalHeight);
+  lightboxFrame.style.transition = 'none';
+  lightboxFrame.style.width = box.w + 'px';
+  lightboxFrame.style.height = box.h + 'px';
+  lightboxFrame.style.transform = 'translate(-50%, -50%) scale(1)';
 });

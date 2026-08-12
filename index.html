@@ -17,15 +17,20 @@
     <header>
         <h1>Gallery</h1>
         <p>created by Moaza</p>
+        <p class="count" id="photoCount"></p>
     </header>
 
     <div class="gallery" id="gallery"></div>
 
     <div class="lightbox" id="lightbox">
+        <div class="lightbox-glow"></div>
         <button class="close" id="closeBtn">&times;</button>
         <button class="arrow prev" id="prevBtn">&#10094;</button>
-        <img src="" alt="" id="lightboxImg">
+        <div class="lightbox-frame" id="lightboxFrame">
+            <img id="lightboxImg" src="" alt="">
+        </div>
         <button class="arrow next" id="nextBtn">&#10095;</button>
+        <div class="lb-caption" id="lbCaption"></div>
     </div>
 
     <script src="script.js"></script>
