@@ -8,14 +8,6 @@ A visually rich, interactive image gallery built with pure HTML, CSS, and JavaSc
 
 > If GitHub Pages isn't enabled yet for this repo: go to **Settings → Pages → Source → main branch → Save**, and the link above will go live within a minute.
 
-## 📸 Screenshots
-
-| Gallery Grid View | Lightbox View |
-|---|---|
-| ![Gallery Grid](screenshots/gallery-grid.png) | ![Lightbox](screenshots/lightbox.png) |
-
-> Add your screenshots to a `/screenshots` folder in the repo and update the file names above to match.
-
 ## 🛠️ Tech Stack
 
 - **HTML5** — Semantic structure
